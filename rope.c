@@ -8,6 +8,8 @@
 
 #define EMPTY ""
 
+char *strdup(const char *s);
+
 
 RopeNode* makeRopeNode(const char* str) {
     // Allocate memory for a new node
@@ -15,8 +17,6 @@ RopeNode* makeRopeNode(const char* str) {
     DIE(new_node == NULL, "Unable to allocate memory for a new node!\n");
 
     // Add the data into the node
-    new_node->str = malloc(sizeof(char) * (strlen(str) + 1));
-    DIE(new_node->str == NULL, "Unable to allocate memory for the node's string!\n");
     new_node->str = str;
 
     // Initialize properties
@@ -33,9 +33,7 @@ RopeTree* makeRopeTree(RopeNode* root) {
     DIE(tree == NULL, "Unable to allocate memory for the tree!\n");
 
     // Initialize the root
-    tree->root= malloc(sizeof(RopeNode));
-    DIE(tree->root == NULL, "Unable to allocate memory for the root!\n");
-    memcpy(tree->root, root, sizeof(RopeNode));
+    tree->root = root;
 
     return tree;
 }
@@ -51,7 +49,7 @@ void printRopeNode(RopeNode* rn) {
     }
 
     printRopeNode(rn->left);
-    printRopeNode(rn->right);
+   printRopeNode(rn->right);
 }
 
 void printRopeTree(RopeTree* rt) {
@@ -89,32 +87,85 @@ int getTotalWeight(RopeNode* rt) {
 
 RopeTree* concat(RopeTree* rt1, RopeTree* rt2) {
     // Initialize the root node of the new tree
-    RopeNode *root = makeRopeNode(EMPTY);
+    RopeNode *root = makeRopeNode(strdup(EMPTY));
     root->left = rt1->root;
     root->right = rt2->root;
     root->weight = getTotalWeight(root->left);
     
-    // Free old trees' memory
-    free(rt1);
-    free(rt2);
-
     // Initialize the new tree
     RopeTree *new_tree = makeRopeTree(root);
+    
     return new_tree;
 }
 
 
-char indexRope(RopeTree* rt, int idx) {
-    // TODO 2. Index - 10p
+char __indexRope(RopeNode *node, int idx) {
+    if (node->weight <= idx && node->right !=  NULL) {
+        return __indexRope(node->right, idx - node->weight);
+    } else {
+        if (node->left != NULL) {
+            return __indexRope(node->left, idx);
+        } else {
+            return node->str[idx];
+        }
+    }
 }
 
+char indexRope(RopeTree* rt, int idx) {
+    return __indexRope(rt->root, idx);
+}
 
 char* search(RopeTree* rt, int start, int end) {
-    // TODO 3. Search - 20p
+    // Allocate memory for the string
+    char *str = malloc(sizeof(char) * (end - start + 1));
+    DIE(str == NULL, "Unable to allocate memory for the search sting!\n");
+    strcpy(str, EMPTY);
+
+    // Fill the string
+    for (int index = start; index < end; index++) {
+        char c = indexRope(rt, index);
+        str[index - start] = c;
+    }
+    str[end - start] = '\0';
+
+    return str;
+}
+
+RopeNode *indexNode(RopeNode *node, int idx) {
+    if (node->weight <= idx && node->right !=  NULL) {
+        return indexNode(node->right, idx - node->weight);
+    } else {
+        if (node->left != NULL) {
+            return indexNode(node->left, idx);
+        } else {
+            if (idx > 0) {
+                RopeNode *new_right, *new_left;
+                char *str_left, *str_right;
+                str_left = malloc(sizeof(char) * (idx + 1));
+                strncpy(str_left, node->str, idx);
+                str_left[strlen(str_left)] = '\0';
+
+                str_right = malloc(sizeof(char) * (strlen(node->str) - idx + 1));
+                strncpy(str_right, node->str + idx, strlen(node->str) - idx);
+                str_right[strlen(str_right)] = '\0';
+
+                new_left = makeRopeNode(str_left);
+                new_right = makeRopeNode(str_right);
+
+                node->str = EMPTY;
+                node->left = new_left;
+                node->right = new_right;
+                node->weight = strlen(node->left->str);
+            }
+        }
+    }
 }
 
 SplitPair split(RopeTree* rt, int idx) {
-    // TODO 4. Split - 20p
+    SplitPair trees;
+    trees.left = rt->root;
+
+    RopeNode *splitNode = indexNode(rt->root, idx);
 }
 
 RopeTree* insert(RopeTree* rt, int idx, const char* str) {
