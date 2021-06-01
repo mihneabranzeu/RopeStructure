@@ -42,8 +42,6 @@ char indexRope(RopeTree* rt, int idx);
 
 char __indexRope(RopeNode *node, int idx);
 
-RopeNode* indexNode(RopeNode *node, int idx);
-
 char* search(RopeTree* rt, int start, int end);
 
 SplitPair split(RopeTree* rt, int idx);
