@@ -344,7 +344,7 @@ RopeTree* delete(RopeTree* rt, int start, int len) {
     }
     sp2 = split(rtr, len);
 
-    // Initialing the two rope trees to concat them
+    // Initializing the two rope trees to concat them
     RopeTree *rt1 = makeRopeTree(sp1.left);
     RopeTree *rt2 = makeRopeTree(sp2.right);
 

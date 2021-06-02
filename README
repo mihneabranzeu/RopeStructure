@@ -1,0 +1,31 @@
+OVERVIEW:
+This is a rope structure implementation, based on binary trees. There are
+multiple operations that may be performed on such a data structure, such as:
+-> concatenation: it is translated to de user as a concatenation of 2 strings, 
+    and it is performed faster with RopeTrees than usual strings
+-> indexing, searching for a character or substring; it is more complex than
+    searching through strings
+-> deleting, inserting: Another advantage of thee rope, as these operations
+    are performed faster than string deletion and insertion
+
+DATA STRUCTURE:
+The rope structure is a particular type of binary tree, each node containing
+either the length of its left subtree or a string if its a leaf node. Thus,
+insertions, deletions and searches may be done in logarithmic complexity, 
+depending on the layout of the tree.
+
+FUNCTIONS:
+->concat: Takes two rope trees, and merges them together by creating a common
+    parent node to their roots. This node will be the root of the newly created
+    tree.
+->index, search: Similar to the typical search of a binary search tree, the search
+    makes use of the values stored in nodes to decide wheter the wanted character
+    are in the  left/right subtre of the current node. The functions continues
+    recursively until it reaches a leaf node.
+->split: The function receives a tree, and based on the index of the characters in
+    each leaf node, decides whether the node should be moved in the left or the right
+    tree. If the split needs to break a node apart, we manually separate the node into
+    two distinct nodes, so the operation may be performed.
+->insert, delete: These functions are based on calling the split and concat functions.
+    A delete translates into 2 splits and a concatenation, and an insert means one split
+    and 2 concatenations.
